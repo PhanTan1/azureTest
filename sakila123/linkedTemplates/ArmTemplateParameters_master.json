@@ -1,0 +1,42 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "sakila123"
+		},
+		"AzureBlobStorage1_sakila_connectionString": {
+			"value": ""
+		},
+		"Sakila_DW_password": {
+			"value": ""
+		},
+		"Sakila_Staging_password": {
+			"value": ""
+		},
+		"Sakila_DW_properties_typeProperties_server": {
+			"value": "sakila123.database.windows.net"
+		},
+		"Sakila_DW_properties_typeProperties_database": {
+			"value": "sakila_dw"
+		},
+		"Sakila_DW_properties_typeProperties_userName": {
+			"value": "tan123"
+		},
+		"Sakila_Staging_properties_typeProperties_server": {
+			"value": "sakila123.database.windows.net"
+		},
+		"Sakila_Staging_properties_typeProperties_database": {
+			"value": "sakila"
+		},
+		"Sakila_Staging_properties_typeProperties_userName": {
+			"value": "tan123"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}

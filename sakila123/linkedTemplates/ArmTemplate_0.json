@@ -1,0 +1,1049 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "sakila123"
+		},
+		"AzureBlobStorage1_sakila_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1_sakila'"
+		},
+		"Sakila_DW_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'Sakila_DW'"
+		},
+		"Sakila_Staging_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'Sakila_Staging'"
+		},
+		"Sakila_DW_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "sakila123.database.windows.net"
+		},
+		"Sakila_DW_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "sakila_dw"
+		},
+		"Sakila_DW_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "tan123"
+		},
+		"Sakila_Staging_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "sakila123.database.windows.net"
+		},
+		"Sakila_Staging_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "sakila"
+		},
+		"Sakila_Staging_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "tan123"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureBlobStorage1_sakila')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureBlobStorage1_sakila_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Sakila_DW')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"server": "[parameters('Sakila_DW_properties_typeProperties_server')]",
+					"database": "[parameters('Sakila_DW_properties_typeProperties_database')]",
+					"encrypt": "mandatory",
+					"trustServerCertificate": false,
+					"authenticationType": "SQL",
+					"userName": "[parameters('Sakila_DW_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('Sakila_DW_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Sakila_Staging')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"server": "[parameters('Sakila_Staging_properties_typeProperties_server')]",
+					"database": "[parameters('Sakila_Staging_properties_typeProperties_database')]",
+					"encrypt": "mandatory",
+					"trustServerCertificate": false,
+					"authenticationType": "SQL",
+					"userName": "[parameters('Sakila_Staging_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('Sakila_Staging_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Dim_Customer')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Sakila_DW",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "SK_customer",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "BK_customer",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "email",
+						"type": "varchar"
+					},
+					{
+						"name": "country",
+						"type": "varchar"
+					},
+					{
+						"name": "city",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Dim_Customer"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Sakila_DW')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Dim_Date')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Sakila_DW",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "DateKey",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Date",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "FullDateUK",
+						"type": "char"
+					},
+					{
+						"name": "FullDateUSA",
+						"type": "char"
+					},
+					{
+						"name": "DayOfMonth",
+						"type": "varchar"
+					},
+					{
+						"name": "DaySuffix",
+						"type": "varchar"
+					},
+					{
+						"name": "DayName",
+						"type": "varchar"
+					},
+					{
+						"name": "DayOfWeekUSA",
+						"type": "char"
+					},
+					{
+						"name": "DayOfWeekUK",
+						"type": "char"
+					},
+					{
+						"name": "DayOfWeekInMonth",
+						"type": "varchar"
+					},
+					{
+						"name": "DayOfWeekInYear",
+						"type": "varchar"
+					},
+					{
+						"name": "DayOfQuarter",
+						"type": "varchar"
+					},
+					{
+						"name": "DayOfYear",
+						"type": "varchar"
+					},
+					{
+						"name": "WeekOfMonth",
+						"type": "varchar"
+					},
+					{
+						"name": "WeekOfQuarter",
+						"type": "varchar"
+					},
+					{
+						"name": "WeekOfYear",
+						"type": "varchar"
+					},
+					{
+						"name": "Month",
+						"type": "varchar"
+					},
+					{
+						"name": "MonthName",
+						"type": "varchar"
+					},
+					{
+						"name": "MonthOfQuarter",
+						"type": "varchar"
+					},
+					{
+						"name": "Quarter",
+						"type": "char"
+					},
+					{
+						"name": "QuarterName",
+						"type": "varchar"
+					},
+					{
+						"name": "Year",
+						"type": "char"
+					},
+					{
+						"name": "YearName",
+						"type": "char"
+					},
+					{
+						"name": "MonthYear",
+						"type": "char"
+					},
+					{
+						"name": "MMYYYY",
+						"type": "char"
+					},
+					{
+						"name": "FirstDayOfMonth",
+						"type": "date"
+					},
+					{
+						"name": "LastDayOfMonth",
+						"type": "date"
+					},
+					{
+						"name": "FirstDayOfQuarter",
+						"type": "date"
+					},
+					{
+						"name": "LastDayOfQuarter",
+						"type": "date"
+					},
+					{
+						"name": "FirstDayOfYear",
+						"type": "date"
+					},
+					{
+						"name": "LastDayOfYear",
+						"type": "date"
+					},
+					{
+						"name": "IsHolidayUSA",
+						"type": "bit"
+					},
+					{
+						"name": "IsWeekday",
+						"type": "bit"
+					},
+					{
+						"name": "HolidayUSA",
+						"type": "varchar"
+					},
+					{
+						"name": "IsHolidayUK",
+						"type": "bit"
+					},
+					{
+						"name": "HolidayUK",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "DimDate"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Sakila_DW')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Dim_Film')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Sakila_DW",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "SK_film",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "BK_film",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "title",
+						"type": "varchar"
+					},
+					{
+						"name": "length_min",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "language",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Dim_Film"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Sakila_DW')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Dim_Store')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Sakila_DW",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "SK_store",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "BK_store",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "manager_full_name",
+						"type": "varchar"
+					},
+					{
+						"name": "country",
+						"type": "varchar"
+					},
+					{
+						"name": "city",
+						"type": "varchar"
+					},
+					{
+						"name": "address",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Dim_Store"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Sakila_DW')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Fact_Rental')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Sakila_DW",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "row_id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "BK_inventory",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "BK_rental",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "BK_payment",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "total_payment",
+						"type": "decimal",
+						"precision": 15,
+						"scale": 2
+					},
+					{
+						"name": "datekey_rental",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "datekey_return",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "datekey_payment",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "SK_customer",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "SK_staff",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "SK_store",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "SK_film",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Fact_Rental"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Sakila_DW')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/actor_staging')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Sakila_Staging",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "actor_id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "first_name",
+						"type": "nvarchar"
+					},
+					{
+						"name": "last_name",
+						"type": "nvarchar"
+					},
+					{
+						"name": "last_update",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "actor"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Sakila_Staging')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/address_staging')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Sakila_Staging",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "address_id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "address",
+						"type": "nvarchar"
+					},
+					{
+						"name": "address2",
+						"type": "nvarchar"
+					},
+					{
+						"name": "district",
+						"type": "nvarchar"
+					},
+					{
+						"name": "city_id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "postal_code",
+						"type": "nvarchar"
+					},
+					{
+						"name": "phone",
+						"type": "nvarchar"
+					},
+					{
+						"name": "last_update",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "address"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Sakila_Staging')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/category_staging')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Sakila_Staging",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "category_id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "name",
+						"type": "nvarchar"
+					},
+					{
+						"name": "last_update",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "category"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Sakila_Staging')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/city_staging')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Sakila_Staging",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "city_id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "city",
+						"type": "nvarchar"
+					},
+					{
+						"name": "country_id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "last_update",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "city"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Sakila_Staging')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/country_staging')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Sakila_Staging",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "country_id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "country",
+						"type": "nvarchar"
+					},
+					{
+						"name": "last_update",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "country"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Sakila_Staging')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/customer_staging')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Sakila_Staging",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "customer_id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "store_id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "first_name",
+						"type": "nvarchar"
+					},
+					{
+						"name": "last_name",
+						"type": "nvarchar"
+					},
+					{
+						"name": "email",
+						"type": "nvarchar"
+					},
+					{
+						"name": "address_id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "active",
+						"type": "nvarchar"
+					},
+					{
+						"name": "create_date",
+						"type": "nvarchar"
+					},
+					{
+						"name": "last_update",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "customer"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Sakila_Staging')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/film_staging')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Sakila_Staging",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "film_id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "title",
+						"type": "nvarchar"
+					},
+					{
+						"name": "description",
+						"type": "nvarchar"
+					},
+					{
+						"name": "release_year",
+						"type": "nvarchar"
+					},
+					{
+						"name": "language_id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "original_language_id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "rental_duration",
+						"type": "nvarchar"
+					},
+					{
+						"name": "rental_rate",
+						"type": "nvarchar"
+					},
+					{
+						"name": "length",
+						"type": "nvarchar"
+					},
+					{
+						"name": "replacement_cost",
+						"type": "nvarchar"
+					},
+					{
+						"name": "rating",
+						"type": "nvarchar"
+					},
+					{
+						"name": "special_features",
+						"type": "nvarchar"
+					},
+					{
+						"name": "last_update",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "film"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Sakila_Staging')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/filmcsv')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage1_sakila",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "film.csv",
+						"container": "sakilacsv"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "film_id",
+						"type": "String"
+					},
+					{
+						"name": "title",
+						"type": "String"
+					},
+					{
+						"name": "description",
+						"type": "String"
+					},
+					{
+						"name": "release_year",
+						"type": "String"
+					},
+					{
+						"name": "language_id",
+						"type": "String"
+					},
+					{
+						"name": "original_language_id",
+						"type": "String"
+					},
+					{
+						"name": "rental_duration",
+						"type": "String"
+					},
+					{
+						"name": "rental_rate",
+						"type": "String"
+					},
+					{
+						"name": "length",
+						"type": "String"
+					},
+					{
+						"name": "replacement_cost",
+						"type": "String"
+					},
+					{
+						"name": "rating",
+						"type": "String"
+					},
+					{
+						"name": "special_features",
+						"type": "String"
+					},
+					{
+						"name": "last_update",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1_sakila')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/fim_actor_staging')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Sakila_Staging",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "actor_id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "film_id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "last_update",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "film_actor"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Sakila_Staging')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/fim_text_staging')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Sakila_Staging",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "film_id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "title",
+						"type": "nvarchar"
+					},
+					{
+						"name": "description",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "film_text"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Sakila_Staging')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/inventory_staging')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Sakila_Staging",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "inventory_id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "film_id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "store_id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "last_update",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "inventory"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Sakila_Staging')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/language_staging')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Sakila_Staging",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "language_id",
+						"type": "nvarchar"
+					},
+					{
+						"name": "name",
+						"type": "nvarchar"
+					},
+					{
+						"name": "last_update",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "language"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Sakila_Staging')]"
+			]
+		}
+	]
+}
