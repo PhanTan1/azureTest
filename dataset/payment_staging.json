@@ -1,0 +1,46 @@
+{
+	"name": "payment_staging",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Sakila_Staging",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "payment_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "customer_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "staff_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "rental_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "amount",
+				"type": "nvarchar"
+			},
+			{
+				"name": "payment_date",
+				"type": "nvarchar"
+			},
+			{
+				"name": "last_update",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "payment"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

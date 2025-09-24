@@ -1,0 +1,227 @@
+{
+	"name": "dataflow3",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "film_staging",
+						"type": "DatasetReference"
+					},
+					"name": "film"
+				},
+				{
+					"dataset": {
+						"referenceName": "language_staging",
+						"type": "DatasetReference"
+					},
+					"name": "language"
+				},
+				{
+					"dataset": {
+						"referenceName": "customer_staging",
+						"type": "DatasetReference"
+					},
+					"name": "customer"
+				},
+				{
+					"dataset": {
+						"referenceName": "address_staging",
+						"type": "DatasetReference"
+					},
+					"name": "address"
+				},
+				{
+					"dataset": {
+						"referenceName": "city_staging",
+						"type": "DatasetReference"
+					},
+					"name": "city"
+				},
+				{
+					"dataset": {
+						"referenceName": "country_staging",
+						"type": "DatasetReference"
+					},
+					"name": "country"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Dim_Film",
+						"type": "DatasetReference"
+					},
+					"name": "dimFilm"
+				},
+				{
+					"dataset": {
+						"referenceName": "Dim_Customer",
+						"type": "DatasetReference"
+					},
+					"name": "dimcustomer"
+				}
+			],
+			"transformations": [
+				{
+					"name": "join1"
+				},
+				{
+					"name": "join2"
+				},
+				{
+					"name": "join3"
+				},
+				{
+					"name": "join4"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          film_id as string,",
+				"          title as string,",
+				"          description as string,",
+				"          release_year as string,",
+				"          language_id as string,",
+				"          original_language_id as string,",
+				"          rental_duration as string,",
+				"          rental_rate as string,",
+				"          length as string,",
+				"          replacement_cost as string,",
+				"          rating as string,",
+				"          special_features as string,",
+				"          last_update as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> film",
+				"source(output(",
+				"          language_id as string,",
+				"          name as string,",
+				"          last_update as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> language",
+				"source(output(",
+				"          customer_id as string,",
+				"          store_id as string,",
+				"          first_name as string,",
+				"          last_name as string,",
+				"          email as string,",
+				"          address_id as string,",
+				"          active as string,",
+				"          create_date as string,",
+				"          last_update as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> customer",
+				"source(output(",
+				"          address_id as string,",
+				"          address as string,",
+				"          address2 as string,",
+				"          district as string,",
+				"          city_id as string,",
+				"          postal_code as string,",
+				"          phone as string,",
+				"          last_update as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> address",
+				"source(output(",
+				"          city_id as string,",
+				"          city as string,",
+				"          country_id as string,",
+				"          last_update as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> city",
+				"source(output(",
+				"          country_id as string,",
+				"          country as string,",
+				"          last_update as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> country",
+				"film, language join(film@language_id == language@language_id,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"customer, address join(customer@address_id == address@address_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join2",
+				"join2, city join(address@city_id == city@city_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join3",
+				"join3, country join(city@country_id == country@country_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join4",
+				"join1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          SK_film as integer,",
+				"          BK_film as integer,",
+				"          title as string,",
+				"          length_min as integer,",
+				"          language as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          BK_film = film_id,",
+				"          title,",
+				"          length_min = length,",
+				"          language = name",
+				"     )) ~> dimFilm",
+				"join4 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          SK_customer as integer,",
+				"          BK_customer as integer,",
+				"          email as string,",
+				"          country as string,",
+				"          city as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     recreate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          BK_customer = customer_id,",
+				"          email,",
+				"          country,",
+				"          city",
+				"     )) ~> dimcustomer"
+			]
+		}
+	}
+}

@@ -1,0 +1,34 @@
+{
+	"name": "city_staging",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Sakila_Staging",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "city_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "city",
+				"type": "nvarchar"
+			},
+			{
+				"name": "country_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "last_update",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "city"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,70 @@
+{
+	"name": "film_staging",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Sakila_Staging",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "film_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "title",
+				"type": "nvarchar"
+			},
+			{
+				"name": "description",
+				"type": "nvarchar"
+			},
+			{
+				"name": "release_year",
+				"type": "nvarchar"
+			},
+			{
+				"name": "language_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "original_language_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "rental_duration",
+				"type": "nvarchar"
+			},
+			{
+				"name": "rental_rate",
+				"type": "nvarchar"
+			},
+			{
+				"name": "length",
+				"type": "nvarchar"
+			},
+			{
+				"name": "replacement_cost",
+				"type": "nvarchar"
+			},
+			{
+				"name": "rating",
+				"type": "nvarchar"
+			},
+			{
+				"name": "special_features",
+				"type": "nvarchar"
+			},
+			{
+				"name": "last_update",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "film"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

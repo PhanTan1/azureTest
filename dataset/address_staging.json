@@ -1,0 +1,50 @@
+{
+	"name": "address_staging",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Sakila_Staging",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "address_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "address",
+				"type": "nvarchar"
+			},
+			{
+				"name": "address2",
+				"type": "nvarchar"
+			},
+			{
+				"name": "district",
+				"type": "nvarchar"
+			},
+			{
+				"name": "city_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "postal_code",
+				"type": "nvarchar"
+			},
+			{
+				"name": "phone",
+				"type": "nvarchar"
+			},
+			{
+				"name": "last_update",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "address"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

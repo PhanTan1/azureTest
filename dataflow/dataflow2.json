@@ -1,0 +1,73 @@
+{
+	"name": "dataflow2",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "filmcsv",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "film_staging",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          film_id as string,",
+				"          title as string,",
+				"          description as string,",
+				"          release_year as string,",
+				"          language_id as string,",
+				"          original_language_id as string,",
+				"          rental_duration as string,",
+				"          rental_rate as string,",
+				"          length as string,",
+				"          replacement_cost as string,",
+				"          rating as string,",
+				"          special_features as string,",
+				"          last_update as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          film_id as string,",
+				"          title as string,",
+				"          description as string,",
+				"          release_year as string,",
+				"          language_id as string,",
+				"          original_language_id as string,",
+				"          rental_duration as string,",
+				"          rental_rate as string,",
+				"          length as string,",
+				"          replacement_cost as string,",
+				"          rating as string,",
+				"          special_features as string,",
+				"          last_update as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     recreate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+			]
+		}
+	}
+}

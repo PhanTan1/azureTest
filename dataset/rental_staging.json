@@ -1,0 +1,46 @@
+{
+	"name": "rental_staging",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Sakila_Staging",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "rental_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "rental_date",
+				"type": "nvarchar"
+			},
+			{
+				"name": "inventory_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "customer_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "return_date",
+				"type": "nvarchar"
+			},
+			{
+				"name": "staff_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "last_update",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "rental"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

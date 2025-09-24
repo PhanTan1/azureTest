@@ -1,0 +1,30 @@
+{
+	"name": "fim_actor_staging",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Sakila_Staging",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "actor_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "film_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "last_update",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "film_actor"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
